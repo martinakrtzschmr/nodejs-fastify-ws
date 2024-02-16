@@ -1,5 +1,6 @@
 import { createPoll } from './routes/create-poll';
 import { getPoll } from './routes/get-poll';
+import { voteOnPoll } from './routes/vote-on-poll';
 
 import fastify from 'fastify';
 
@@ -9,6 +10,7 @@ const app = fastify({
 
 app.register(createPoll);
 app.register(getPoll);
+app.register(voteOnPoll);
 
 const start = async () => {
   try {
