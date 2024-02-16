@@ -1,8 +1,8 @@
-import { createPoll } from "./routes/create-poll";
-import fastify from "fastify";
+import { createPoll } from './routes/create-poll';
+import fastify from 'fastify';
 
 const app = fastify({
-  logger: true
+  logger: true,
 });
 
 app.register(createPoll);
