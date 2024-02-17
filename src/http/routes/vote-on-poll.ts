@@ -3,6 +3,7 @@ import { prisma } from '../../lib/prima';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { redis } from '../../lib/redis';
+import { voting } from '../../ws/voting-pub-sub';
 
 export async function voteOnPoll(app: FastifyInstance) {
   // @ts-ignore: Package version diffrence
@@ -26,8 +27,8 @@ export async function voteOnPoll(app: FastifyInstance) {
           where: {
             sessionId_pollId: {
               sessionId,
-              pollId
-            }
+              pollId,
+            },
           },
         });
 
@@ -41,7 +42,16 @@ export async function voteOnPoll(app: FastifyInstance) {
             },
           });
 
-          await redis.zincrby(pollId, -1, userPreviousVoteOnPoll.pollOptionId);
+          const votes = await redis.zincrby(
+            pollId,
+            -1,
+            userPreviousVoteOnPoll.pollOptionId
+          );
+
+          voting.publish(pollId, {
+            pollOptionId: userPreviousVoteOnPoll.pollOptionId,
+            votes: Number(votes),
+          });
         } else if (userPreviousVoteOnPoll) {
           return res
             .status(400)
@@ -67,7 +77,11 @@ export async function voteOnPoll(app: FastifyInstance) {
         },
       });
 
-      await redis.zincrby(pollId, 1, pollOptionId);
+      const votes = await redis.zincrby(pollId, 1, pollOptionId);
+      voting.publish(pollId, {
+        pollOptionId,
+        votes: Number(votes),
+      });
 
       return res.status(201).send({ poll });
     }
