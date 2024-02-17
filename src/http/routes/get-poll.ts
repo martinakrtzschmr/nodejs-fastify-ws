@@ -34,18 +34,18 @@ export async function getPoll(app: FastifyInstance) {
     const result = await redis.zrange(pollId, 0, -1, 'WITHSCORES');
     const votes = arrayToStringNumberObject(result);
 
-    return res.send({ 
+    return res.send({
       poll: {
         id: poll.id,
         title: poll.title,
-        options: poll.pollOption.map(option => {
+        options: poll.pollOption.map((option) => {
           return {
             id: option.id,
             title: option.title,
-            score: (option.id in votes) ? votes[option.id] : 0
-          }
-        })
-      }
-     });
+            score: option.id in votes ? votes[option.id] : 0,
+          };
+        }),
+      },
+    });
   });
 }

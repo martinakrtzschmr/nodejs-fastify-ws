@@ -24,10 +24,10 @@ export async function voteOnPoll(app: FastifyInstance) {
       if (sessionId) {
         const userPreviousVoteOnPoll = await prisma.vote.findUnique({
           where: {
-            sessionId_poolId: {
+            sessionId_pollId: {
               sessionId,
-              pollId,
-            },
+              pollId
+            }
           },
         });
 
