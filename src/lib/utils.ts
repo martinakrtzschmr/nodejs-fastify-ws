@@ -1,4 +1,4 @@
-export const arrayToStringNumberObject = (array: Array<String>) => {
+export const arrayToStringNumberObject = (array: Array<string>) => {
   const newObject = array.reduce((obj, item, index) => {
     if (index % 2 === 0) {
       const score = array[index + 1];
