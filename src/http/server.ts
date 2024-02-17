@@ -1,7 +1,9 @@
 import { createPoll } from './routes/create-poll';
 import { getPoll } from './routes/get-poll';
 import { voteOnPoll } from './routes/vote-on-poll';
+import { pollResults } from '../ws/poll-results';
 
+import websocket from '@fastify/websocket';
 import fastifyCookie from '@fastify/cookie';
 
 import fastify from 'fastify';
@@ -22,10 +24,14 @@ app.register(fastifyCookie, {
   // parseOptions: {},
 });
 
+/* Websocket routes */
+app.register(websocket);
+
 /* Server routes */
 app.register(createPoll);
 app.register(getPoll);
 app.register(voteOnPoll);
+app.register(pollResults);
 
 const start = async () => {
   try {
