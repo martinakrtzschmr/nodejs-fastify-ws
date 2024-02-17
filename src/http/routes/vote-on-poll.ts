@@ -1,6 +1,7 @@
 import type { FastifyRequest, FastifyReply, FastifyInstance } from 'fastify';
 import { prisma } from '../../lib/prima';
 import { z } from 'zod';
+import { randomUUID } from 'crypto';
 
 export async function voteOnPoll(app: FastifyInstance) {
   // @ts-ignore: Package version diffrence
@@ -17,11 +18,21 @@ export async function voteOnPoll(app: FastifyInstance) {
       const { pollOptionId } = voteOnPollBody.parse(req.body);
       const { pollId } = voteOnPollParams.parse(req.params);
 
-      const poll = await prisma.poll.create({
-        
-      });
+      let { sessionId } = req.cookies;
 
-      return res.status(201).send();
+      if (!sessionId) {
+        sessionId = randomUUID();
+        res.setCookie('sessionId', sessionId, {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 30, // 30 days
+          signed: true,
+          httpOnly: true,
+        });
+      }
+
+      // const poll = await prisma.poll.create({});
+
+      return res.status(201).send({ sessionId });
     }
   );
 }
